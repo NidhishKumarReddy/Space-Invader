@@ -1,2 +1,2 @@
 # Space-Invader
-A Pygame 
+A Pygame Application
