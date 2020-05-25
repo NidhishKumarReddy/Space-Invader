@@ -25,7 +25,8 @@ def player(x, y):
 alienImg = pygame.image.load('alien.png')
 alienX = random.randint(0, 736)
 alienY = random.randint(50, 150)
-alienX_change = 0
+alienX_change = 0.3
+alienY_change = 40
 
 def alien(x, y):
     screen.blit(alienImg, (x, y))
@@ -41,7 +42,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        #if keystroke is pressed check whether its rigth or left
+        # if keystroke is pressed check whether its rigth or left
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 playerX_change = -0.3
@@ -52,12 +53,23 @@ while running:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 playerX_change = 0
     
+    # Checking for boundaries of spaceship so it doesn't go out of window
     playerX += playerX_change
 
     if playerX <= 0:
         playerX = 0
     elif playerX >= 736:
         playerX = 736
+
+    # Alien Movement
+    alienX += alienX_change
+
+    if alienX <= 0:
+        alienX_change = 0.3
+        alienY += alienY_change
+    elif alienX >= 736:
+        alienX_change = -0.3
+        alienY += alienY_change
 
     player(playerX, playerY)
     alien(alienX, alienY)
