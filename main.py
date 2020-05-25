@@ -27,14 +27,22 @@ def player(x, y):
     screen.blit(playerImg, (x, y))
 
 # Alien
-alienImg = pygame.image.load('alien.png')
-alienX = random.randint(0, 735)
-alienY = random.randint(50, 150)
-alienX_change = 4
-alienY_change = 40
+alienImg = []
+alienX = []
+alienY = []
+alienX_change = []
+alienY_change = []
+num_of_aliens = 6
 
-def alien(x, y):
-    screen.blit(alienImg, (x, y))
+for i in range(num_of_aliens):
+    alienImg.append(pygame.image.load('alien.png'))
+    alienX.append(random.randint(0, 735))
+    alienY.append(random.randint(50, 150))
+    alienX_change.append(4)
+    alienY_change.append(40)
+
+def alien(x, y, i):
+    screen.blit(alienImg[i], (x, y))
 
 # Bullet
 # Ready - You can't see the bullet on the screen
@@ -96,35 +104,37 @@ while running:
         playerX = 736
 
     # Alien Movement
-    alienX += alienX_change
+    for i in range(num_of_aliens):
+        alienX[i] += alienX_change[i]
 
-    if alienX <= 0:
-        alienX_change = 4
-        alienY += alienY_change
-    elif alienX >= 736:
-        alienX_change = -4
-        alienY += alienY_change
+        if alienX[i] <= 0:
+            alienX_change[i] = 4
+            alienY[i] += alienY_change[i]
+        elif alienX[i] >= 736:
+            alienX_change[i] = -4
+            alienY[i] += alienY_change[i]
+        
+         # Collision
+        collision = isCollision(alienX[i], alienY[i], bulletX, bulletY)
+        if collision:
+            bulletY = 480
+            bullet_state = "ready"
+            score += 1
+            print(score)
+            alienX[i] = random.randint(0, 735)
+            alienY[i] = random.randint(50, 150)
+        
+        alien(alienX[i], alienY[i], i)
 
     # Bullet Movement
     if bulletY <= 0:
         bulletY = 480
         bullet_state = "ready"
-    
+
     if bullet_state is "fire":
         fire_bullet(bulletX, bulletY)
         bulletY -= bulletY_change
-
-    # Collision
-    collision = isCollision(alienX, alienY, bulletX, bulletY)
-    if collision:
-        bulletY = 480
-        bullet_state = "ready"
-        score += 1
-        print(score)
-        alienX = random.randint(0, 735)
-        alienY = random.randint(50, 150)
     
     player(playerX, playerY)
-    alien(alienX, alienY)
-
+    
     pygame.display.update()
