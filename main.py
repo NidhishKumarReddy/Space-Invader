@@ -34,6 +34,21 @@ alienY_change = 40
 def alien(x, y):
     screen.blit(alienImg, (x, y))
 
+# Bullet
+# Ready - You can't see the bullet on the screen
+# Fire - The bullet is currently moving
+bulletImg = pygame.image.load('bullet.png')
+bulletX = 0
+bulletY = 480
+bulletX_change = 0
+bulletY_change = 10
+bullet_state = "ready"
+
+def fire_bullet(x, y):
+    global bullet_state
+    bullet_state = "fire"
+    screen.blit(bulletImg, (x + 16, y + 10))
+
 # Game Running function
 running = True
 while running:
@@ -54,6 +69,8 @@ while running:
                 playerX_change = -5
             if event.key == pygame.K_RIGHT:
                 playerX_change = 5
+            if event.key == pygame.K_SPACE:
+                fire_bullet(playerX, bulletY)
         
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
@@ -76,6 +93,11 @@ while running:
     elif alienX >= 736:
         alienX_change = -4
         alienY += alienY_change
+
+    # Bullet Movement
+    if bullet_state is "fire":
+        fire_bullet(playerX, bulletY)
+        bulletY -= bulletY_change
 
     player(playerX, playerY)
     alien(alienX, alienY)
