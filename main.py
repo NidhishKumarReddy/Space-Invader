@@ -1,4 +1,5 @@
 import pygame
+import random
 
 # Initialize the pygame
 pygame.init()
@@ -19,6 +20,15 @@ playerX_change = 0
 
 def player(x, y):
     screen.blit(playerImg, (x, y))
+
+# Alien
+alienImg = pygame.image.load('alien.png')
+alienX = random.randint(0, 736)
+alienY = random.randint(50, 150)
+alienX_change = 0
+
+def alien(x, y):
+    screen.blit(alienImg, (x, y))
 
 # Game Running function
 running = True
@@ -50,4 +60,5 @@ while running:
         playerX = 736
 
     player(playerX, playerY)
+    alien(alienX, alienY)
     pygame.display.update()
