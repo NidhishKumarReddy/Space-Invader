@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+from pygame import mixer
 
 # Initialize the pygame
 pygame.init()
@@ -11,12 +12,32 @@ screen = pygame.display.set_mode((800,600))
 # Background
 background = pygame.image.load('background.png')
 
+# Background Sound
+mixer.music.load('background.wav')
+mixer.music.play(-1)
+
 # Title and Icon
 pygame.display.set_caption("Space Invaders")
 icon = pygame.image.load('icon.png')
 pygame.display.set_icon(icon)
 
-score = 0
+# Game Over text
+over_font = pygame.font.Font('freesansbold.ttf', 64)
+def game_over_text():
+    over_text = over_font.render("GAME OVER", True, (255,255,255))
+    screen.blit(over_text, (200, 250))
+
+# Score
+score_value = 0
+font = pygame.font.Font('freesansbold.ttf', 32)
+
+textX = 10
+textY = 10
+
+def show_score(x, y):
+    score = font.render("Score :" + str(score_value), True, (255,255,255))
+    screen.blit(score, (x, y))
+
 # Player
 playerImg = pygame.image.load('spaceship.png')
 playerX = 370
@@ -88,6 +109,8 @@ while running:
                 playerX_change = 5
             if event.key == pygame.K_SPACE:
                 if bullet_state is "ready":
+                    bullet_Sound = mixer.Sound('laser.wav')
+                    bullet_Sound.play()
                     bulletX = playerX
                     fire_bullet(bulletX, bulletY)
         
@@ -105,6 +128,13 @@ while running:
 
     # Alien Movement
     for i in range(num_of_aliens):
+        # Game Over:
+        if alienY[i] > 440:
+            for j in range(num_of_aliens):
+                alienY[j] = 2000
+            game_over_text()
+            break
+
         alienX[i] += alienX_change[i]
 
         if alienX[i] <= 0:
@@ -117,10 +147,11 @@ while running:
          # Collision
         collision = isCollision(alienX[i], alienY[i], bulletX, bulletY)
         if collision:
+            explosion_Sound = mixer.Sound('explosion.wav')
+            explosion_Sound.play()
             bulletY = 480
             bullet_state = "ready"
-            score += 1
-            print(score)
+            score_value += 1
             alienX[i] = random.randint(0, 735)
             alienY[i] = random.randint(50, 150)
         
@@ -136,5 +167,5 @@ while running:
         bulletY -= bulletY_change
     
     player(playerX, playerY)
-    
+    show_score(textX, textY)
     pygame.display.update()
