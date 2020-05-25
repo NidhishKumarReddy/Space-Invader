@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 # Initialize the pygame
 pygame.init()
@@ -15,6 +16,7 @@ pygame.display.set_caption("Space Invaders")
 icon = pygame.image.load('icon.png')
 pygame.display.set_icon(icon)
 
+score = 0
 # Player
 playerImg = pygame.image.load('spaceship.png')
 playerX = 370
@@ -26,7 +28,7 @@ def player(x, y):
 
 # Alien
 alienImg = pygame.image.load('alien.png')
-alienX = random.randint(0, 736)
+alienX = random.randint(0, 735)
 alienY = random.randint(50, 150)
 alienX_change = 4
 alienY_change = 40
@@ -49,6 +51,13 @@ def fire_bullet(x, y):
     bullet_state = "fire"
     screen.blit(bulletImg, (x + 16, y + 10))
 
+def isCollision(alienX, alienY, bulletX, bulletY):
+    distance = math.sqrt((math.pow(alienX - bulletX, 2)) + (math.pow(alienY - bulletY, 2)))
+    if distance < 27:
+        return True
+    else:
+        return False
+
 # Game Running function
 running = True
 while running:
@@ -70,7 +79,9 @@ while running:
             if event.key == pygame.K_RIGHT:
                 playerX_change = 5
             if event.key == pygame.K_SPACE:
-                fire_bullet(playerX, bulletY)
+                if bullet_state is "ready":
+                    bulletX = playerX
+                    fire_bullet(bulletX, bulletY)
         
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
@@ -95,10 +106,25 @@ while running:
         alienY += alienY_change
 
     # Bullet Movement
+    if bulletY <= 0:
+        bulletY = 480
+        bullet_state = "ready"
+    
     if bullet_state is "fire":
-        fire_bullet(playerX, bulletY)
+        fire_bullet(bulletX, bulletY)
         bulletY -= bulletY_change
 
+    # Collision
+    collision = isCollision(alienX, alienY, bulletX, bulletY)
+    if collision:
+        bulletY = 480
+        bullet_state = "ready"
+        score += 1
+        print(score)
+        alienX = random.randint(0, 735)
+        alienY = random.randint(50, 150)
+    
     player(playerX, playerY)
     alien(alienX, alienY)
+
     pygame.display.update()
